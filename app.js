@@ -9,6 +9,8 @@ const util = require("util"); // Import util
 const execPromise = util.promisify(exec); // Promisify exec
 const { compressVideo, compressImage, compressAudio } = require("./compress");
 const os = require("os");
+const ffprobePath = process.env.FFPROBE_PATH || "ffprobe";
+
 
 const app = express();
 const PORT = 5000;
@@ -48,7 +50,6 @@ app.post("/upload", upload.array("media", 3), async (req, res) => {
     const imageExts = [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff", ".avif"];
     const videoExts = [".mp4", ".mov", ".avi", ".wmv", ".flv", ".webm", ".mkv"];
     const audioExts = [".mp3", ".wav", ".aac", ".ogg", ".flac", ".m4a"];
-    const ffprobePath = path.resolve(__dirname, "../bin/ffprobe.exe");
 
     const imageFiles = req.files.filter(file => imageExts.includes(path.extname(file.originalname).toLowerCase()));
     const otherFiles = req.files.filter(file => !imageExts.includes(path.extname(file.originalname).toLowerCase()));
@@ -133,8 +134,8 @@ app.post("/upload", upload.array("media", 3), async (req, res) => {
         // Check duration
         let durationSec = 0;
         try {
-          const ffprobeCmd = `"${ffprobePath}" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${tempPath.replace(/\\/g, "/")}"`;
-          const output = execSync(cmd).toString().trim(); // Using execSync for duration check
+        const ffprobeCmd = `"${ffprobePath}" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${tempPath.replace(/\\/g, "/")}"`;
+const output = execSync(ffprobeCmd).toString().trim(); // ✅ correct variable name
           durationSec = parseFloat(output);
         } catch (e) {
           durationSec = 0;
