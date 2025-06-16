@@ -1,18 +1,23 @@
-# Base image with Node.js and apt
 FROM node:20-slim
 
-# Install GStreamer
+# Avoid tzdata prompt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install GStreamer + ffmpeg + x264 encoder + basic tools
 RUN apt-get update && apt-get install -y \
   gstreamer1.0-tools \
   gstreamer1.0-plugins-base \
   gstreamer1.0-plugins-good \
   gstreamer1.0-plugins-bad \
-  gstreamer1.0-libav
+  gstreamer1.0-plugins-ugly \
+  gstreamer1.0-libav \
+  ffmpeg \
+  && apt-get clean
 
-# Create app directory
+# Set working dir
 WORKDIR /app
 
-# Copy package files and install deps
+# Copy dependencies and install
 COPY package*.json ./
 RUN npm install
 
