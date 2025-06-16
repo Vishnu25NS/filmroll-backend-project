@@ -32,9 +32,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 function hasAudioTrack(filePath) {
   try {
-    const ffprobePath = path.resolve(__dirname, "./bin/ffprobe.exe");
     const cmd = `"${ffprobePath}" -v error -select_streams a -show_entries stream=codec_type -of csv=p=0 "${filePath.replace(/\\/g, "/")}"`;
-    const output = execSync(cmd).toString().trim();
+   const output = execSync(ffprobeCmd).toString().trim(); // (you're using wrong variable name)
+    console.log("Checking audio track with command:", cmd);
+    console.log("FFprobe output:", output);
     return output.includes("audio");
   } catch (e) {
     return false;
